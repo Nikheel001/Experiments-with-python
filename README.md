@@ -1,2 +1,1 @@
-# Experiments-with-python
-Experiments-with-python
+# my programming snippets/practice log
