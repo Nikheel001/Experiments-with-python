@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class OneThread {
 
-    static Logger log = Logger.getLogger(ManyThreadOneTask.class.getName());
+    static Logger log = Logger.getLogger(OneThread.class.getName());
     static Handler h = new ConsoleHandler();
     static Formatter f = new Formatter() {
         @Override
