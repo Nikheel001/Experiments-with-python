@@ -12,7 +12,6 @@ import java.util.logging.Logger;
  */
 public class TwoThread {
 
-
     static Logger log = Logger.getLogger(ManyThreadOneTask.class.getName());
     static Handler h = new ConsoleHandler();
     static Formatter f = new Formatter() {
@@ -43,19 +42,21 @@ public class TwoThread {
 
         // // way - 2
         // thread1 = new Thread(new Runnable() {
-        //     @Override
-        //     public void run() {
-        //         System.out.println("Anonymous Task executed by : " + Thread.currentThread().getName());
-        //     }
+        // @Override
+        // public void run() {
+        // System.out.println("Anonymous Task executed by : " +
+        // Thread.currentThread().getName());
+        // }
         // });
 
         // execThread(thread1);
 
         // // way - 3
         // thread1 = new Thread() {
-        //     public void run() {
-        //         System.out.println("Anonymous Thread.run() executed by : " + Thread.currentThread().getName());
-        //     };
+        // public void run() {
+        // System.out.println("Anonymous Thread.run() executed by : " +
+        // Thread.currentThread().getName());
+        // };
         // };
 
         // execThread(thread1);

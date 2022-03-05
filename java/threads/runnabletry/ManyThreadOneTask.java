@@ -27,7 +27,7 @@ public class ManyThreadOneTask {
         log.setUseParentHandlers(false);
         h.setFormatter(f);
         log.addHandler(h);
-        
+
         log.info("Creating OneTask");
         OneTask task = new OneTask(log);
 
@@ -50,5 +50,4 @@ public class ManyThreadOneTask {
         }
 
     }
-
 }

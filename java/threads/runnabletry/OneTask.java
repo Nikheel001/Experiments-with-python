@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 /**
  * OneTask
  */
-public class OneTask implements Runnable{
+public class OneTask implements Runnable {
 
-    Logger log ;
+    Logger log;
 
     public OneTask(Logger _log) {
         log = _log;
@@ -16,5 +16,5 @@ public class OneTask implements Runnable{
     @Override
     public void run() {
         log.info("OneTask executed");
-    }   
+    }
 }
