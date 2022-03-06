@@ -32,3 +32,11 @@ ScheduledExecutorService
 
 Executors
 - utility class which provides implemantations(static factory methods) of Executor, ExecutorService, ScheduledExecutorService
+
+Delayed
+- interface which provides building block to make ScheduledFuture
+- provides a method which returns time left to spawn the Task.
+
+ScheduledFuture
+- extends Delayed and Future.
+- easily cancel planned tasks if required.
