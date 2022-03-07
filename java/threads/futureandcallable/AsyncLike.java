@@ -61,98 +61,47 @@ public class AsyncLike {
         
         Future<?> prepareGroceries = null;
         
-        while (!buyGroceries.isDone() && !boilWater.isDone()) {
-            try {
-                if (buyGroceries.isDone() && prepareGroceries == null) {
-                    try {
-                        if (buyGroceries.get()) {
-                            prepareGroceries = chef.submit(prepareGroceriesTask);
-                            log.info("started cleaning groceries");
-                        } else {
-                            chef.shutdownNow();
-                            log.severe("buying groceries failed");
-                            System.exit(0);
-                        }
-                    } catch (ExecutionException | InterruptedException e) {
-                        log.severe("buying groceries cancelled");
-                        chef.shutdownNow();
-                        System.exit(1);
-                    }
-                } else if (!buyGroceries.isDone()) {
-                    log.info("yet to buy groceries");
-                }
-                if (!boilWater.isDone()) {
-                    log.info("waiting for water to boil");
-                }
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.severe("Cooking dish cancelled");
+        try {
+            boilWater.get();
+            log.info("water is boiled");
+            if (buyGroceries.get()) {
+                log.info("groceries baught successfully");
+                prepareGroceries = chef.submit(prepareGroceriesTask);
+                log.info("started cleaning groceries");
+            } else {
                 chef.shutdownNow();
-                System.exit(1);
+                log.severe("buying groceries failed");
+                System.exit(0);
             }
+        } catch (ExecutionException | InterruptedException e) {
+            log.severe("buying groceries cancelled or boiling water failed");
+            chef.shutdownNow();
+            System.exit(1);
         }
-
-        if (prepareGroceries == null) {
-            try {
-                if (buyGroceries.get()) {
-                    prepareGroceries = chef.submit(prepareGroceriesTask);
-                    log.info("started cleaning groceries");
-                } else {
-                    chef.shutdownNow();
-                    log.severe("buying groceries failed");
-                    System.exit(0);
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                log.severe("buying groceries cancelled");
-                chef.shutdownNow();
-                System.exit(1);
-            }
-        }
-        
-        while(!prepareGroceries.isDone()){
-            log.info("cleaning groceries");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.severe("cleaning groceries cancelled");
-                chef.shutdownNow();
-                System.exit(1);
-            }
+        try {
+            prepareGroceries.get();
+            log.info("groceries are prepared");
+        } catch (InterruptedException | ExecutionException e2) {
+            log.severe("preparing groceries failed");
+            chef.shutdownNow();
+            System.exit(1);
         }
         
         ScheduledFuture<Boolean> prepareFood = chef.schedule(prepareFoodTask, timeTakenToPrepareFood,
                 TimeUnit.SECONDS);
-        
-        while(!prepareFood.isDone()){
-            log.info("preparing food");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.severe("preparing food cancelled");
-                chef.shutdownNow();
-                System.exit(1);
-            }
-        }
+        log.info("started preparing food");
 
         try {
             if(prepareFood.get()){
+                log.info("food is prepared and started eating it.");
                 Future<?> eatFood = chef.submit(eatFoodTask);
-                while(!eatFood.isDone()){
-                    log.info("eating food");
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        log.severe("eating food cancelled");
-                        chef.shutdownNow();
-                        System.exit(1);
-                    }
-                }
+                eatFood.get();
                 log.info("All done");
             }else{
                 log.info(":( All that for this :(");
             }
         } catch (InterruptedException | ExecutionException e1) {
-            log.severe("Preparing food cancelled");
+            log.severe("Preparing food | eatingFood either interrupted or cancelled ");
         }
         chef.shutdown();
     }
