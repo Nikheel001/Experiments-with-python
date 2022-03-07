@@ -1,6 +1,7 @@
 package executortry;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -41,7 +42,7 @@ public class OneTaskScheduledThreadPool {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
         int tasksToSchedule = 3;
-        ScheduledFuture[] res = new ScheduledFuture[tasksToSchedule];
+        ScheduledFuture<?>[] res = new ScheduledFuture[tasksToSchedule];
         long[] delays = { 10, 3, 7 };
 
         for (int i = 0; i < tasksToSchedule; i++) {
@@ -51,28 +52,13 @@ public class OneTaskScheduledThreadPool {
         }
         log.info("scheduled 3 OneTask");
 
-        while (all(res)) {
-            for (ScheduledFuture scheduledFuture : res) {
-                log.info(
-                        String.format(
-                                "%ld seconds left to execute OneTask",
-                                scheduledFuture.getDelay(TimeUnit.SECONDS)));
-            }
+        for (ScheduledFuture<?> scheduledFuture : res) {
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.info("waiting terminated");
+                scheduledFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.severe("task interrupted or failed");
             }
         }
         executor.shutdown();
-    }
-
-    static boolean all(ScheduledFuture[] arr) {
-        for (ScheduledFuture future : arr) {
-            if (!future.isDone()) {
-                return false;
-            }
-        }
-        return true;
     }
 }

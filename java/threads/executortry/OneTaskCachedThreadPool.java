@@ -1,6 +1,7 @@
 package executortry;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,7 +40,8 @@ public class OneTaskCachedThreadPool {
         log.info("CachedThreadPool created");
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        int lim = 10, ctr = 0;
+        int lim = 10;
+        // ctr = 0;
         var res = new Future[lim];
 
         for (int i = 0; i < lim; i++) {
@@ -48,56 +50,15 @@ public class OneTaskCachedThreadPool {
         }
         log.info("submitted 10 OneTask");
 
-        // will print incorrect count
-        // while (ctr != lim) {
-        // for (int i = 0; i < lim; i++) {
-        // if (res[i] != null && res[i].isDone()) {
-        // ctr += 1;
-        // res[i] = null;
-        // }
-        // }
-        // try {
-        // if(ctr != lim){
-        // log.info(String.format("waiting for %d subtasks to finish execution", lim -
-        // ctr));
-        // Thread.sleep(500);
-        // }
-        // } catch (InterruptedException e) {
-        // log.severe(" main thread interrupted");
-        // }
-        // }
-
-        while (true) {
-            if (all2(res)) {
-                break;
-            }
+        for (int i = 0; i < lim; i++) {
             try {
-                log.info("waiting for all subtasks to finish execution");
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                log.severe(" main thread interrupted");
+                res[i].get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.severe(String.format("task %d failed or interrupted", i));
             }
         }
+
         executor.shutdown();
         log.info("finished all tasks successfully");
-    }
-
-    // // O(n)
-    // static boolean all(Future[] arr) {
-    // boolean res = true;
-    // for (Future future : arr) {
-    // res &= future.isDone();
-    // }
-    // return res;
-    // }
-
-    // O(n)
-    static boolean all2(Future[] arr) {
-        for (Future future : arr) {
-            if (!future.isDone()) {
-                return false;
-            }
-        }
-        return true;
     }
 }
